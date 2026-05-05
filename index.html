@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Diffie-Hellman Algorithm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2023.11.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2023.11.1/core.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen p-8 flex flex-col items-center">
+
+    <h1 class="text-3xl font-bold text-blue-600">Simulasi Diffie-Hellman Algorithm</h1>
+    <h6 class="text-lg font-bold text-blue-300 mb-8">Kelompok 2 - Kelas A</h6>
+    
+    <div class="bg-white p-6 rounded-xl shadow-md mb-10 w-full max-w-4xl flex flex-wrap gap-6 justify-center">
+        <div class="flex flex-col items-center">
+            <label class="text-sm font-semibold text-gray-600">Prime (p) - Publik</label>
+            <input type="number" id="val-p" value="23" class="w-24 mt-2 px-3 py-2 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="flex flex-col items-center">
+            <label class="text-sm font-semibold text-gray-600">Generator (g) - Publik</label>
+            <input type="number" id="val-g" value="5" class="w-24 mt-2 px-3 py-2 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="flex flex-col items-center">
+            <label class="text-sm font-semibold text-gray-600">Privat PC 1 (a)</label>
+            <input type="number" id="val-a" value="4" class="w-24 mt-2 px-3 py-2 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="flex flex-col items-center">
+            <label class="text-sm font-semibold text-gray-600">Privat PC 2 (b)</label>
+            <input type="number" id="val-b" value="3" class="w-24 mt-2 px-3 py-2 text-center border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+        </div>
+        
+        <button py-click="start_simulation" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+            Mulai
+        </button>
+    </div>
+
+    <div class="flex justify-between w-full max-w-5xl relative">
+        <div class="bg-white w-[30%] p-6 rounded-xl shadow-md text-center z-10">
+            <div class="flex items-center gap-2 justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 640 640"><path d="M380.8 96C372.7 110.1 368 126.5 368 144L368 160L96 160L96 384L368 384L368 448L96 448C60.7 448 32 419.3 32 384L32 160C32 124.7 60.7 96 96 96L380.8 96zM368 496C368 513.5 372.7 529.9 380.8 544L152 544C138.7 544 128 533.3 128 520C128 506.7 138.7 496 152 496L368 496zM464 96L560 96C586.5 96 608 117.5 608 144L608 496C608 522.5 586.5 544 560 544L464 544C437.5 544 416 522.5 416 496L416 144C416 117.5 437.5 96 464 96zM488 160C474.7 160 464 170.7 464 184C464 197.3 474.7 208 488 208L536 208C549.3 208 560 197.3 560 184C560 170.7 549.3 160 536 160L488 160zM488 256C474.7 256 464 266.7 464 280C464 293.3 474.7 304 488 304L536 304C549.3 304 560 293.3 560 280C560 266.7 549.3 256 536 256L488 256zM544 400C544 382.3 529.7 368 512 368C494.3 368 480 382.3 480 400C480 417.7 494.3 432 512 432C529.7 432 544 417.7 544 400z"/></svg>
+                <span class="text-lg font-bold text-gray-800">PC 1</span>
+            </div>
+            <div id="w-step1" class="opacity-0 transition-opacity duration-700 bg-blue-50 p-4 rounded-lg mb-4 text-sm border border-blue-100">
+                Menciptakan Kunci Publik (A)<br>
+                <span class="font-mono font-bold text-blue-600 text-sm">A = g<sup>a</sup> mod p</span><br>
+                <span id="w-calc1" class="mt-2 block"></span>
+            </div>
+            <div id="w-step3" class="opacity-0 transition-opacity duration-700 bg-emerald-100 text-emerald-800 p-4 rounded-lg border-2 border-emerald-400 text-sm font-bold">
+                Menghitung Kunci Rahasia!<br>
+                <span class="font-mono text-emerald-700 text-sm">Secret = B<sup>a</sup> mod p</span><br>
+                <span id="w-calc2" class="mt-2 block text-base"></span>
+            </div>
+        </div>
+
+        <div class="w-[40%] flex flex-col justify-center items-center border-x-2 border-dashed border-gray-400 relative">
+            <div class="absolute top-0 text-gray-500 font-bold bg-gray-100 px-4 py-1 rounded-full text-sm">Jalur Internet</div>
+            <div id="packet-A" class="absolute top-1/3 left-0 opacity-0 transition-all duration-1000 ease-in-out bg-emerald-500 text-white px-4 py-1 rounded-full font-bold shadow-md transform -translate-y-1/2">
+                Publik A
+            </div>
+            <div id="packet-B" class="absolute top-2/3 right-0 opacity-0 transition-all duration-1000 ease-in-out bg-amber-500 text-white px-4 py-1 rounded-full font-bold shadow-md transform -translate-y-1/2">
+                Publik B
+            </div>
+        </div>
+
+        <div class="bg-white w-[30%] p-6 rounded-xl shadow-md text-center z-10">
+            <div class="flex items-center gap-2 justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 640 640"><path d="M380.8 96C372.7 110.1 368 126.5 368 144L368 160L96 160L96 384L368 384L368 448L96 448C60.7 448 32 419.3 32 384L32 160C32 124.7 60.7 96 96 96L380.8 96zM368 496C368 513.5 372.7 529.9 380.8 544L152 544C138.7 544 128 533.3 128 520C128 506.7 138.7 496 152 496L368 496zM464 96L560 96C586.5 96 608 117.5 608 144L608 496C608 522.5 586.5 544 560 544L464 544C437.5 544 416 522.5 416 496L416 144C416 117.5 437.5 96 464 96zM488 160C474.7 160 464 170.7 464 184C464 197.3 474.7 208 488 208L536 208C549.3 208 560 197.3 560 184C560 170.7 549.3 160 536 160L488 160zM488 256C474.7 256 464 266.7 464 280C464 293.3 474.7 304 488 304L536 304C549.3 304 560 293.3 560 280C560 266.7 549.3 256 536 256L488 256zM544 400C544 382.3 529.7 368 512 368C494.3 368 480 382.3 480 400C480 417.7 494.3 432 512 432C529.7 432 544 417.7 544 400z"/></svg>
+                <span class="text-lg font-bold text-gray-800">PC 2</span>
+            </div>
+            <div id="n-step1" class="opacity-0 transition-opacity duration-700 bg-blue-50 p-4 rounded-lg mb-4 text-sm border border-blue-100">
+                Menciptakan Kunci Publik (B)<br>
+                <span class="font-mono font-bold text-blue-600 text-sm">B = g<sup>b</sup> mod p</span><br>
+                <span id="n-calc1" class="mt-2 block"></span>
+            </div>
+            <div id="n-step3" class="opacity-0 transition-opacity duration-700 bg-emerald-100 text-emerald-800 p-4 rounded-lg border-2 border-emerald-400 text-sm font-bold">
+                Menghitung Kunci Rahasia!<br>
+                <span class="font-mono text-emerald-700 text-sm">Secret = A<sup>b</sup> mod p</span><br>
+                <span id="n-calc2" class="mt-2 block text-base"></span>
+            </div>
+        </div>
+    </div>
+
+    <script type="py">
+        import asyncio
+        from pyscript import document
+
+        def power(a, b, P):
+            if (b == 1):
+                return a
+            else:
+                return ((pow(a, b)) % P)
+
+        async def start_simulation(event):
+            # 1. Mengambil elemen DOM
+            w_step1 = document.getElementById('w-step1')
+            n_step1 = document.getElementById('n-step1')
+            w_step3 = document.getElementById('w-step3')
+            n_step3 = document.getElementById('n-step3')
+            pA = document.getElementById('packet-A')
+            pB = document.getElementById('packet-B')
+
+            # Reset tampilan animasi ke awal
+            for el in [w_step1, n_step1, w_step3, n_step3]:
+                el.classList.remove('opacity-100')
+                el.classList.add('opacity-0')
+            pA.style.opacity = '0'
+            pA.style.left = '0'
+            pB.style.opacity = '0'
+            pB.style.right = '0'
+
+            # 2. Mengambil nilai Input dari HTML
+            p = int(document.getElementById('val-p').value)
+            g = int(document.getElementById('val-g').value)
+            a = int(document.getElementById('val-a').value)
+            b = int(document.getElementById('val-b').value)
+
+            # TAHAP 1: Menghitung Kunci Publik
+            publicA = power(g, a, p)
+            publicB = power(g, b, p)
+
+            await asyncio.sleep(0.5) 
+            
+            document.getElementById('w-calc1').innerHTML = f"A = {g}<sup>{a}</sup> mod {p} = <strong>{publicA}</strong>"
+            document.getElementById('n-calc1').innerHTML = f"B = {g}<sup>{b}</sup> mod {p} = <strong>{publicB}</strong>"
+            w_step1.classList.replace('opacity-0', 'opacity-100')
+            n_step1.classList.replace('opacity-0', 'opacity-100')
+
+            # TAHAP 2: Animasi Pertukaran Kunci
+            await asyncio.sleep(2)
+            
+            pA.innerText = f"A = {publicA}"
+            pB.innerText = f"B = {publicB}"
+            pA.style.opacity = '1'
+            pB.style.opacity = '1'
+
+            await asyncio.sleep(0.1)
+            pA.style.left = 'calc(100% - 80px)' 
+            pB.style.right = 'calc(100% - 80px)'
+
+            # TAHAP 3: Menghitung Kunci Rahasia Bersama
+            await asyncio.sleep(2)
+            
+            pA.style.opacity = '0'
+            pB.style.opacity = '0'
+
+            secretWahyu = power(publicB, a, p)
+            secretNgurah = power(publicA, b, p)
+
+            document.getElementById('w-calc2').innerHTML = f"Secret = {publicB}<sup>{a}</sup> mod {p} = <span>{secretWahyu}</span>"
+            document.getElementById('n-calc2').innerHTML = f"Secret = {publicA}<sup>{b}</sup> mod {p} = <span>{secretNgurah}</span>"
+            
+            w_step3.classList.replace('opacity-0', 'opacity-100')
+            n_step3.classList.replace('opacity-0', 'opacity-100')
+    </script>
+</body>
+</html>
