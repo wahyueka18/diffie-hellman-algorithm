@@ -1,1 +1,1 @@
-![Deskripsi](images/hasil skenario.png)
+![Deskripsi](paste-link-tadi-disini)
