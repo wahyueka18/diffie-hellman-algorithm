@@ -17,7 +17,7 @@ Berdasarkan hasil perancangan, implementasi kode, dan simulasi yang telah dilaku
 Simulasi ini membuktikan bahwa algoritma **Diffie-Hellman (DH)** berhasil menjalankan fungsinya sebagai protokol pertukaran kunci. Dua entitas (PC 1 dan PC 2) dapat menghasilkan **Shared Secret Key** yang identik melalui jalur komunikasi publik tanpa perlu mengirimkan kunci rahasia tersebut secara langsung.
 
 ### 2. Peran Parameter Publik $p$ dan $g$
-Variabel `$p$` (Prime) dan `$g$` (Generator) memegang peranan krusial dalam keamanan algoritma:
+Variabel $p$ (Prime) dan $g$ (Generator) memegang peranan krusial dalam keamanan algoritma:
 * **$p$ (Bilangan Prima):** Berfungsi sebagai modulus yang membatasi ruang angka hasil perhitungan. Semakin besar nilai $p$, semakin sulit bagi penyerang untuk melakukan *brute-force*.
 * **$g$ (Generator):** Bertindak sebagai basis eksponensial yang memastikan distribusi kunci yang aman dalam ruang modular.
 
