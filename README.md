@@ -1,1 +1,1 @@
-![Teks Alternatif](image/hasil skenario.png)
+![Teks Alternatif]([https://raw.githubusercontent.com/username/repo/branch/folder/image.png](https://raw.githubusercontent.com/wahyueka18/diffie-hellman-algorithm/refs/heads/vayu-branch/images/hasil%20skenario.png))
